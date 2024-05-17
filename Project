@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.20; 
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -47,7 +47,7 @@ contract FruityToken is ERC20, Ownable {
 
     function redeemFRT(uint256 itemId) public {
         require(Fruity[itemId] > 0, "Item is not available.");
-        require(itemId <= 7, "Item is not available.");
+        require(itemId <= 5, "Item is not available.");
         require(balanceOf(msg.sender) >= Fruity[itemId], "Redeem Failed: Insufficient fruits.");
         transfer(owner(), Fruity[itemId]);
     }
