@@ -1,0 +1,68 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract FruityToken is ERC20, Ownable {
+
+    mapping(uint256 => uint256) public Fruity;
+
+    constructor() ERC20("FRUITY", "FRT") Ownable(msg.sender) {
+        Fruity[1] = 100;
+        Fruity[2] = 60;
+        Fruity[3] = 30;
+        Fruity[4] = 10;
+        Fruity[5] = 50;
+    
+    }
+
+    modifier onlyFruit() {
+        require(owner() == msg.sender, "Only the fruitman can perform this action.");
+        _;
+    }
+
+    function mintFRT(address recipient, uint256 amount) public onlyFruit {
+        _mint(recipient, amount);
+    }
+
+    function transferFRT(address recipient, uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Transfer Failed: Insufficient fruits.");
+        approveTransferFruit(msg.sender, amount);
+        performTransferFruit(msg.sender, recipient, amount);
+    }
+
+    function approveTransferFruit(address owner, uint256 amount) internal {
+        approve(owner, amount);
+    }
+
+    function performTransferFruit(address sender, address recipient, uint256 amount) internal {
+        transferFrom(sender, recipient, amount);
+    }
+
+    function listItems() external pure returns (string memory) {
+        string memory availableItems = "The items on sale: {1} Fruity NFT (100) {2} Fruity T-shirt & Hoodie (60) {3} Random FRUIT Item (30) {4} fruit Sticker (10) {5} Fruit of Happiness (50)";
+        return availableItems;
+    }
+
+    function redeemFRT(uint256 itemId) public {
+        require(Fruity[itemId] > 0, "Item is not available.");
+        require(itemId <= 7, "Item is not available.");
+        require(balanceOf(msg.sender) >= Fruity[itemId], "Redeem Failed: Insufficient fruits.");
+        transfer(owner(), Fruity[itemId]);
+    }
+
+    function burnFRT(uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Burn Failed: Insufficient fruits.");
+        approveTransferFruit(msg.sender, amount);
+        _burn(msg.sender, amount);
+    }
+
+    function checkBalance() external view returns (uint256) {
+        return this.balanceOf(msg.sender);
+    }
+
+    function decimals() override public pure returns (uint8) {
+        return 0;
+    }
+}
